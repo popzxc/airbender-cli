@@ -1,0 +1,42 @@
+[package]
+name = "airbender-cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1"
+bincode = { version = "2", features = ["serde"] }
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+sha3 = "0.10"
+tracing = "0.1"
+tracing-log = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# execution_utils = { path = "../zksync-airbender/execution_utils", features = ["gpu_prover"] }
+# gpu_prover = { path = "../zksync-airbender/gpu_prover" }
+# risc_v_simulator = { path = "../zksync-airbender/risc_v_simulator" }
+
+execution_utils = { git = "https://github.com/matter-labs/zksync-airbender", branch = "dev", features = ["gpu_prover"] }
+gpu_prover = { git = "https://github.com/matter-labs/zksync-airbender", branch = "dev" }
+risc_v_simulator = { git = "https://github.com/matter-labs/zksync-airbender", branch = "dev" }
+
+[profile.release.package."blake2_with_compression_verifier"]
+opt-level = 1
+codegen-units = 256
+overflow-checks = true
+
+[profile.release.package."keccak_special5_verifier"]
+opt-level = 1
+codegen-units = 256
+overflow-checks = true
+
+[profile.release.package."bigint_with_control_verifier"]
+opt-level = 1
+codegen-units = 256
+overflow-checks = true
+
+[profile.release]
+lto = false
+# This is needed for zksync-airbender crates to compile in a reasonable time for x86-64-unknown-linux-gnu
+overflow-checks = true
