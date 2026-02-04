@@ -45,7 +45,7 @@ pub enum Commands {
         #[arg(long)]
         output: PathBuf,
         /// Worker thread count for the unrolled prover.
-        #[arg(long)]
+        #[arg(long, short)]
         threads: Option<usize>,
     },
     /// Generates unified VKs for the recursion layer and writes a single bincode file.
