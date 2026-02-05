@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
+use execution_utils::unrolled_gpu::UnrolledProverLevel;
 
 mod cli;
 mod input;
@@ -64,15 +65,35 @@ fn main() -> Result<()> {
             input,
             output,
             threads,
+            level,
         } => {
             let input_words = input::parse_input_words(&input)?;
-            prover::prove(&app_bin, input_words, &output, threads)?;
+            let prover_level = match level {
+                cli::ProverLevel::Base => UnrolledProverLevel::Base,
+                cli::ProverLevel::RecursionUnrolled => UnrolledProverLevel::RecursionUnrolled,
+                cli::ProverLevel::RecursionUnified => UnrolledProverLevel::RecursionUnified,
+            };
+            prover::prove(&app_bin, input_words, &output, threads, prover_level)?;
         }
-        cli::Commands::GenerateVk { app_bin, output } => {
-            vk::generate_vk(&app_bin, &output)?;
+        cli::Commands::GenerateVk {
+            app_bin,
+            output,
+            level,
+        } => {
+            let prover_level = match level {
+                cli::ProverLevel::Base => UnrolledProverLevel::Base,
+                cli::ProverLevel::RecursionUnrolled => UnrolledProverLevel::RecursionUnrolled,
+                cli::ProverLevel::RecursionUnified => UnrolledProverLevel::RecursionUnified,
+            };
+            vk::generate_vk(&app_bin, &output, prover_level)?;
         }
-        cli::Commands::VerifyProof { proof, vk } => {
-            vk::verify_proof(&proof, &vk)?;
+        cli::Commands::VerifyProof { proof, vk, level } => {
+            let prover_level = match level {
+                cli::ProverLevel::Base => UnrolledProverLevel::Base,
+                cli::ProverLevel::RecursionUnrolled => UnrolledProverLevel::RecursionUnrolled,
+                cli::ProverLevel::RecursionUnified => UnrolledProverLevel::RecursionUnified,
+            };
+            vk::verify_proof(&proof, &vk, prover_level)?;
         }
     }
 

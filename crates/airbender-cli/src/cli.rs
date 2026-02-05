@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
@@ -58,17 +58,33 @@ pub enum Commands {
         /// Worker thread count for the unrolled prover.
         #[arg(long, short)]
         threads: Option<usize>,
+        /// Max prover level to generate.
+        #[arg(long, alias = "leval", value_enum, default_value_t = ProverLevel::RecursionUnified)]
+        level: ProverLevel,
     },
-    /// Generates unified VKs for the recursion layer and writes a single bincode file.
+    /// Generates VKs for the requested level and writes a single bincode file.
     GenerateVk {
         app_bin: PathBuf,
         #[arg(short, long, default_value = "vk.bin")]
         output: PathBuf,
+        /// Max prover level to generate.
+        #[arg(long, alias = "leval", value_enum, default_value_t = ProverLevel::RecursionUnified)]
+        level: ProverLevel,
     },
     /// Verifies a proof against VKs.
     VerifyProof {
         proof: PathBuf,
         #[arg(long)]
         vk: PathBuf,
+        /// Proof level to verify.
+        #[arg(long, alias = "leval", value_enum, default_value_t = ProverLevel::RecursionUnified)]
+        level: ProverLevel,
     },
+}
+
+#[derive(ValueEnum, Debug, Clone, Copy)]
+pub enum ProverLevel {
+    Base,
+    RecursionUnrolled,
+    RecursionUnified,
 }

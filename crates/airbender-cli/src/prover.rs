@@ -11,8 +11,9 @@ pub fn prove(
     input_words: Vec<u32>,
     output: &Path,
     worker_threads: Option<usize>,
+    level: UnrolledProverLevel,
 ) -> Result<()> {
-    let prover = create_unrolled_prover(app_bin_path, worker_threads)?;
+    let prover = create_unrolled_prover(app_bin_path, worker_threads, level)?;
     let oracle = QuasiUARTSource::new_with_reads(input_words);
     tracing::info!("Starting proof generation");
     let start = Instant::now();
@@ -42,6 +43,7 @@ fn strip_bin_suffix(path: &Path) -> Result<String> {
 fn create_unrolled_prover(
     app_bin_path: &Path,
     worker_threads: Option<usize>,
+    level: UnrolledProverLevel,
 ) -> Result<UnrolledProver> {
     let base_path = strip_bin_suffix(app_bin_path)?;
     let mut configuration = ExecutionProverConfiguration::default();
@@ -52,6 +54,6 @@ fn create_unrolled_prover(
     Ok(UnrolledProver::new(
         &base_path,
         configuration,
-        UnrolledProverLevel::RecursionUnified,
+        level,
     ))
 }
