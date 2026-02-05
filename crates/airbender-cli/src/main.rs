@@ -5,6 +5,7 @@ mod cli;
 mod input;
 mod prover;
 mod sim;
+mod sim_transpiler;
 mod vk;
 
 fn main() -> Result<()> {
@@ -39,6 +40,23 @@ fn main() -> Result<()> {
             tracing::info!("Running simulator with profiler");
             let outcome =
                 sim::run_simulator(&app_bin, input_words, cycle_limit, Some(diagnostics))?;
+            sim::report_run_outcome(&outcome);
+        }
+        cli::Commands::RunTranspiler {
+            app_bin,
+            input,
+            cycles,
+            text_path,
+        } => {
+            let input_words = input::parse_input_words(&input)?;
+            let cycle_limit = cycles.unwrap_or(sim::DEFAULT_CYCLES);
+            tracing::info!("Running transpiler JIT");
+            let outcome = sim_transpiler::run_transpiler(
+                &app_bin,
+                input_words,
+                cycle_limit,
+                text_path.as_ref(),
+            )?;
             sim::report_run_outcome(&outcome);
         }
         cli::Commands::Prove {

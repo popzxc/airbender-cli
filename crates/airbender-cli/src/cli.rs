@@ -37,6 +37,17 @@ pub enum Commands {
         #[arg(long)]
         elf_path: Option<PathBuf>,
     },
+    /// Runs the binary via the transpiler JIT.
+    RunTranspiler {
+        app_bin: PathBuf,
+        #[arg(short, long)]
+        input: PathBuf,
+        #[arg(short, long)]
+        cycles: Option<usize>,
+        /// Optional path to the .text section (raw instructions).
+        #[arg(long)]
+        text_path: Option<PathBuf>,
+    },
     /// Generates a proof and writes it as bincode to the output file.
     Prove {
         app_bin: PathBuf,

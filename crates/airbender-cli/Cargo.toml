@@ -22,3 +22,4 @@ tracing-subscriber = { workspace = true, features = ["env-filter"] }
 execution_utils = { workspace = true, features = ["gpu_prover"] }
 gpu_prover = { workspace = true }
 risc_v_simulator = { workspace = true }
+riscv_transpiler = { workspace = true, features = ["jit"] }
