@@ -15,6 +15,12 @@ so you can iterate on proving workflows without wiring up a larger stack.
 RUST_MIN_STACK=16777216 cargo build --release
 ```
 
+This project does always have GPU prover enabled, so in case you don't have CUDA set up locally, you can still compile it by setting:
+
+```
+ZKSYNC_USE_CUDA_STUBS=true
+```
+
 ## Running
 
 While you can run the tool via `cargo run --bin airbender-cli --release`, it is recommended to either install it via
@@ -30,6 +36,9 @@ You can run the binary via Cargo:
 # Run the simulator
 ./target/release/airbender-cli run ./path/to/app.bin --input ./input.hex
 
+# Run via `riscv_transpiler` JIT
+./target/release/airbender-cli run-transpiler ./path/to/app.bin --input ./input.hex
+
 # Generate a flamegraph SVG
 ./target/release/airbender-cli flamegraph ./path/to/app.bin --input ./input.hex --output flamegraph.svg
 
@@ -44,6 +53,37 @@ You can run the binary via Cargo:
 ```
 
 Use `--help` for the full reference and the complete set of options.
+
+## Debugging circuits
+
+Proving supports multiple levels through `--level` (`base`, `recursion-unrolled`, `recursion-unified`).
+When debugging circuit issues, start from the base layer:
+
+```sh
+# Generate a base-layer proof
+./target/release/airbender-cli prove <app.bin> -i <encoded_input.txt> --level base --output <proof.bin>
+
+# Generate base-layer VKs
+./target/release/airbender-cli generate-vk <app.bin> --level base --output <vk.bin>
+
+# Verify the base-layer proof
+./target/release/airbender-cli verify-proof <proof.bin> --vk <vk.bin> --level base
+```
+
+If proving fails and you need more insight into unsatisfied constraints, generate a CPU proof.
+Build with debug circuit flags first:
+
+```sh
+RUST_MIN_STACK=16777216 cargo build --release --features debug_circuits
+```
+
+Then run base-layer proving on CPU:
+
+```sh
+./target/release/airbender-cli prove <app.bin> -i <encoded_input.txt> --backend cpu --level base --cycles <cycles> --ram-bound <ram_bound_bytes> --output <proof.bin>
+```
+
+`--cycles` is optional. If omitted, the CLI estimates it automatically by running the program first via the transpiler.
 
 ## Caveats / Important Notes
 
