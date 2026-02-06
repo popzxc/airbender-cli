@@ -23,3 +23,6 @@ execution_utils = { workspace = true, features = ["gpu_prover"] }
 gpu_prover = { workspace = true }
 risc_v_simulator = { workspace = true }
 riscv_transpiler = { workspace = true, features = ["jit"] }
+
+[features]
+debug_circuits = ["execution_utils/debug_satisfiable", "execution_utils/precheck_satisfied"]

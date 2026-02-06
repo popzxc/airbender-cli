@@ -64,7 +64,10 @@ fn main() -> Result<()> {
             app_bin,
             input,
             output,
+            backend,
             threads,
+            cycles,
+            ram_bound,
             level,
         } => {
             let input_words = input::parse_input_words(&input)?;
@@ -73,7 +76,16 @@ fn main() -> Result<()> {
                 cli::ProverLevel::RecursionUnrolled => UnrolledProverLevel::RecursionUnrolled,
                 cli::ProverLevel::RecursionUnified => UnrolledProverLevel::RecursionUnified,
             };
-            prover::prove(&app_bin, input_words, &output, threads, prover_level)?;
+            prover::prove(
+                &app_bin,
+                input_words,
+                &output,
+                backend,
+                threads,
+                cycles,
+                ram_bound,
+                prover_level,
+            )?;
         }
         cli::Commands::GenerateVk {
             app_bin,

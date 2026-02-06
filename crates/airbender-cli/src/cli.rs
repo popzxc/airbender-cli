@@ -55,11 +55,20 @@ pub enum Commands {
         input: PathBuf,
         #[arg(long)]
         output: PathBuf,
+        /// Prover backend to use.
+        #[arg(long, value_enum, default_value_t = ProverBackend::Gpu)]
+        backend: ProverBackend,
         /// Worker thread count for the unrolled prover.
         #[arg(long, short)]
         threads: Option<usize>,
+        /// Cycle bound for CPU proving.
+        #[arg(long)]
+        cycles: Option<usize>,
+        /// RAM bound in bytes for CPU proving.
+        #[arg(long)]
+        ram_bound: Option<usize>,
         /// Max prover level to generate.
-        #[arg(long, alias = "leval", value_enum, default_value_t = ProverLevel::RecursionUnified)]
+        #[arg(long, value_enum, default_value_t = ProverLevel::RecursionUnified)]
         level: ProverLevel,
     },
     /// Generates VKs for the requested level and writes a single bincode file.
@@ -68,7 +77,7 @@ pub enum Commands {
         #[arg(short, long, default_value = "vk.bin")]
         output: PathBuf,
         /// Max prover level to generate.
-        #[arg(long, alias = "leval", value_enum, default_value_t = ProverLevel::RecursionUnified)]
+        #[arg(long, value_enum, default_value_t = ProverLevel::RecursionUnified)]
         level: ProverLevel,
     },
     /// Verifies a proof against VKs.
@@ -77,7 +86,7 @@ pub enum Commands {
         #[arg(long)]
         vk: PathBuf,
         /// Proof level to verify.
-        #[arg(long, alias = "leval", value_enum, default_value_t = ProverLevel::RecursionUnified)]
+        #[arg(long, value_enum, default_value_t = ProverLevel::RecursionUnified)]
         level: ProverLevel,
     },
 }
@@ -87,4 +96,10 @@ pub enum ProverLevel {
     Base,
     RecursionUnrolled,
     RecursionUnified,
+}
+
+#[derive(ValueEnum, Debug, Clone, Copy)]
+pub enum ProverBackend {
+    Cpu,
+    Gpu,
 }
